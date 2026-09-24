@@ -1,0 +1,25 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.tviettuan01-gif/vietnam-data-mcp",
+  "title": "Vietnam Data MCP (donerightlabs)",
+  "description": "Vietnam public-tender search and e-invoice XML normalizer for AI agents (pay per use).",
+  "repository": {
+    "url": "https://github.com/tviettuan01-gif/vietnam-data-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.apify.com?tools=donerightlabs/tender-intelligence,donerightlabs/vn-einvoice-xml-normalizer",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Optional: 'Bearer <APIFY_TOKEN>' for clients without OAuth support.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
