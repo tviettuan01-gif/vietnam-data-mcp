@@ -1,20 +1,25 @@
 # Vietnam Data MCP (donerightlabs)
 
-A pay-per-use data tool for Vietnam that AI agents can call through the Apify MCP server:
+Public procurement data from **Vietnam's national e-procurement system** (VNEPS, [muasamcong.mof.gov.vn](https://muasamcong.mof.gov.vn)) for AI agents, through Apify's hosted MCP server. Pay per use.
 
-| Tool (Apify Actor) | What it does | Base price (pay-per-event) |
+One tool, [`donerightlabs/tender-intelligence`](https://apify.com/donerightlabs/tender-intelligence), covers the full tender lifecycle:
+
+| `recordType` | Ask it | Returns |
 |---|---|---|
-| [`donerightlabs/tender-intelligence`](https://apify.com/donerightlabs/tender-intelligence) | Searches Vietnam's national e-procurement portal (VNEPS, muasamcong.mpi.gov.vn) by keyword and returns open public tenders: notice number, title, bid closing date, province/district, investment field, as JSON. | $0.05 per run + $0.50 per keyword |
+| `plans` | "What is the government planning to buy?" | Procurement plans (KHLCNT), published before the tender notice, with planned packages and estimated prices |
+| `notices` (default) | "Which tenders are open?" | Tender notices: package name, closing date, location, field |
+| `awards` | "Who won, and at what price?" | Award results by keyword, nationwide: winning contractor, tax ID, price in VND, duration, lots, joint ventures |
+| `awards_by_date` | "All awards in Gia Lai last week?" | Every award result in one province within a date range, no keyword |
 
-Lower prices apply automatically on higher Apify plans (Bronze/Silver/Gold discounts). The Pricing tab of the Actor is the source of truth.
+## Pricing
 
-> **Note (29 Sep 2026):** the former second tool, `vn-einvoice-xml-normalizer`, has been temporarily withdrawn from the Apify Store while its compliance with Vietnam's rules on personal-data processing services is reviewed.
+Pay-per-event, billed to the connected Apify account:
 
-## Try it first (no setup)
+- $0.05 per run
+- $0.15 per keyword searched (or per date-range search in `awards_by_date`)
+- $0.03 per package whose award result is read in full
 
-A published example run with sample input:
-
-- Tender search example (keyword "thiết bị"): https://apify.com/donerightlabs/tender-intelligence/examples/tender-intelligence-task-tim-goi-thau-thiet-bi-vi-du-mau
+One keyword costs $0.20. Search fees apply only after a search succeeds. Lower rates apply on higher Apify plans. The Actor's [Pricing tab](https://apify.com/donerightlabs/tender-intelligence) is the source of truth.
 
 ## Connect over MCP
 
@@ -43,28 +48,32 @@ If your client does not support OAuth, use an Apify API token:
 }
 ```
 
-Runs are billed to the connected Apify account at the prices above.
-
 ## Agent payments without an Apify account
 
 The tool is eligible for Apify's agentic payments: an AI agent can discover, run and pay per use with **x402** (USDC) or **Skyfire**, without creating an Apify account. See Apify's documentation for [x402](https://docs.apify.com/platform/integrations/x402) and [Skyfire](https://docs.apify.com/platform/integrations/skyfire).
 
 ## Example prompts
 
-1. "Find open Vietnamese government tenders about medical equipment and list the three closing soonest." → `tender-intelligence` with keyword `thiết bị y tế`.
-2. "Tìm các gói thầu công đang mở liên quan đến 'thi công sửa chữa' và cho tôi tên gói thầu, tỉnh và ngày đóng thầu." → `tender-intelligence`.
+1. "Find open Vietnamese government tenders for medical equipment and list the three closing soonest." → `notices`, keyword `thiết bị y tế`.
+2. "Tìm kế hoạch lựa chọn nhà thầu liên quan đến 'camera giám sát'." → `plans`.
+3. "Who won recent packages for demining work, and at what price?" → `awards`, keyword `rà phá bom mìn`.
+4. "List all contract awards published in Tỉnh Gia Lai from 12/10/2026 to 19/10/2026." → `awards_by_date`.
 
-Tip: a tender search takes about 1–2 minutes per keyword, so ask for 1–3 keywords per call.
+Tips for agents: translate the topic into short Vietnamese keywords with diacritics; ask for 1–3 keywords per call (about 1–2 minutes each); show the user the maximum cost first; records with a `trang_thai` field are status messages, not tenders.
+
+Published example run (keyword "thiết bị"): https://apify.com/donerightlabs/tender-intelligence/examples/tender-intelligence-task-tim-goi-thau-thiet-bi-vi-du-mau
 
 ## Data and privacy
 
-- `tender-intelligence` returns package-level public procurement data only; it collects no personal data.
-- The tool keeps no data beyond the Apify run itself, which follows Apify's platform retention settings.
+- Source: public pages of VNEPS. Vietnam's Law on Bidding 22/2023/QH15, Article 51(1), requires the system to ensure public, unrestricted access to information published on it.
+- Award results list winning contractors (usually organizations) and their tax IDs. Winners that look like individuals (12-digit personal ID as tax code, or a personal name with no organization marker) are redacted, and phone numbers/emails in free-text fields are masked. This is pattern-based and cannot guarantee that no personal detail ever appears.
+- Runs and results stay in the caller's Apify account under Apify's retention settings. donerightlabs does not access them.
+- Policy: https://donerightlabs.tviettuan01.workers.dev/chinh-sach
 
 ## Support
 
-Issues and feedback: the Issues tab on the Actor's Apify Store page.
+Issues and feedback: https://apify.com/donerightlabs/tender-intelligence/issues
 
 ## Status
 
-Independent tools by donerightlabs. Not affiliated with, or endorsed by, any Vietnamese government agency.
+Independent tool by donerightlabs. Not affiliated with, or endorsed by, any Vietnamese government agency or by Apify.
